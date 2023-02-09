@@ -1,0 +1,101 @@
+import os
+import time
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.keys import Keys
+
+# 浏览器实例化在函数内部，函数执行完程序关闭，浏览器也会关闭
+# 设置全局变量可以解决浏览器自动关闭问题
+def get_webdriver_location(position):
+    for i in os.walk("{}:\\".format(position)):
+        for j in i[2]:
+            if j == "chromedriver_110.exe":
+                return os.path.join(i[0], j)
+
+
+position = "E"
+
+
+
+class login:
+    def __init__(self):
+        bro = webdriver.Chrome(executable_path=get_webdriver_location(position=position))
+        bro.get("https://www.douyin.com/")
+        bro.maximize_window()
+        time.sleep(2)
+        self.bro = bro
+
+    def get_xpath(self, k_xpath):
+        time.sleep(1)
+        return self.bro.find_element(By.XPATH, k_xpath)
+
+    def get_classname(self, k_class):
+        time.sleep(1)
+        return self.bro.find_element(By.CLASS_NAME, k_class)
+
+    def nclick(self, k_xpath):
+        time.sleep(1)
+        self.get_xpath(k_xpath).click()
+
+    def class_click(self, classname):
+        time.sleep(1)
+        self.get_classname(k_class=classname).click()
+
+    def input_button(self, key, word):
+        time.sleep(1)
+        self.get_xpath(key).send_keys(word)
+
+    def quit(self):
+        self.bro.close()
+
+    def js_act(self):
+        self.bro.execute_script('window.scrollTo(0, 1000)')
+
+    def action(self):
+        self.class_click(dict['first'])
+        # self.nclick(dict["login_xpath"])
+        self.nclick(dict['i_know_button'])
+        self.nclick(dict['page'])
+        # self.nclick(dict["pass_login"])
+        # self.input_button(dict['name'], '18780399469')
+        # self.input_button(dict['password'], '@QQ20030814qq')
+        # self.nclick(dict['login_button'])
+
+
+dict = {
+    'first':'dy-account-close',
+    'login_ads_xpath': '//*[@id="login-pannel"]/div[2]',
+    'login_xpath': '//*[@id="qdblhsHs"]/button/p',
+    'pass_login': '//*[@id="web-login-container"]/article/article/article/div[1]/ul[1]/li[3]',
+    'name': '//*[@id="web-login-container"]/article/article/article/form/div[1]/div/input',
+    'password': '//*[@id="web-login-container"]/article/article/article/form/div[2]/div/div/input',
+    'login_button': '//*[@id="web-login-container"]/article/article/article/form/div[5]/button',
+    'page': '//*[@id="douyin-right-container"]/div[3]/div/div/div[2]',
+    'i_know_button': '//*[@id="slidelist"]/div[1]/button',
+    # 'full_screen':'//*[@id="sliderVideo"]/div[1]/div[1]/div/xg-controls/xg-inner-controls/xg-right-grid/xg-icon[1]/div[1]/svg[1]',
+    # #'full_screen':'//*[@id="sliderVideo"]/div[1]/div[1]/div/xg-controls/xg-inner-controls/xg-right-grid/xg-icon[1]/div[1]',
+
+}
+
+
+# 浏览器执行动作试错程序，在main实例化，遇到成功的也不会关闭
+def continue_act(web):
+    try:
+        web.action()
+        print(1)
+        return True
+    except:
+        web.quit()
+        print(0)
+        return False
+
+
+if __name__ == '__main__':
+    result=0
+    while not result:
+        web = login()
+        result = continue_act(web)
+        # 每一次都进行浏览器实例化，有错则重来
+
